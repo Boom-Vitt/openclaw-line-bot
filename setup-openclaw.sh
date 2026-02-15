@@ -20,8 +20,8 @@ WORKSPACE_DIR="$OPENCLAW_DATA/workspace"
 
 # ── Check Docker ────────────────────────────────────────────────────────────
 check_docker() {
-  command -v docker &>/dev/null || err "Docker required. Install: https://docs.docker.com/get-docker/"
-  docker info &>/dev/null 2>&1  || err "Docker daemon not running. Start Docker first."
+  command -v docker &>/dev/null || err "ต้องติดตั้ง Docker ก่อน: https://docs.docker.com/get-docker/"
+  docker info &>/dev/null 2>&1  || err "Docker ยังไม่ทำงาน เปิด Docker ก่อนแล้วรันใหม่"
   ok "Docker $(docker --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')"
 }
 
@@ -39,49 +39,49 @@ gen_token() {
 # ── Ask deploy mode ────────────────────────────────────────────────────────
 ask_mode() {
   echo ""
-  echo "  Where are you deploying?"
+  echo "  จะติดตั้งที่ไหน?"
   echo ""
-  echo "    1) VPS   — public server with domain (adds Traefik + auto SSL)"
-  echo "    2) Local — your machine, localhost access only"
+  echo "    1) VPS   — เซิร์ฟเวอร์ที่มีโดเมน (ติดตั้ง Traefik + SSL อัตโนมัติ)"
+  echo "    2) Local — เครื่องตัวเอง, เข้าผ่าน localhost เท่านั้น"
   echo ""
-  printf "  Choose [1/2]: "
+  printf "  เลือก [1/2]: "
   read -r MODE_INPUT
   case "${MODE_INPUT:-2}" in
     1|vps|VPS)   DEPLOY_MODE="vps" ;;
     *)           DEPLOY_MODE="local" ;;
   esac
-  ok "Deploy mode: $DEPLOY_MODE"
+  ok "โหมด: $DEPLOY_MODE"
 
   if [ "$DEPLOY_MODE" = "vps" ]; then
     echo ""
-    printf "  Your domain (e.g. srv1068766.hstgr.cloud): "
+    printf "  โดเมนของคุณ (เช่น srv1068766.hstgr.cloud): "
     read -r DOMAIN_NAME
-    [ -z "${DOMAIN_NAME:-}" ] && err "Domain is required for VPS mode."
+    [ -z "${DOMAIN_NAME:-}" ] && err "ต้องระบุโดเมนสำหรับโหมด VPS"
 
-    printf "  SSL email (for Let's Encrypt): "
+    printf "  อีเมลสำหรับ SSL (Let's Encrypt): "
     read -r SSL_EMAIL
     [ -z "${SSL_EMAIL:-}" ] && SSL_EMAIL="admin@$DOMAIN_NAME"
 
-    printf "  Timezone (e.g. Asia/Bangkok) [UTC]: "
+    printf "  Timezone (เช่น Asia/Bangkok) [UTC]: "
     read -r TZ_INPUT
     TZ_VAL="${TZ_INPUT:-UTC}"
 
-    ok "Domain: openclaw.$DOMAIN_NAME"
+    ok "โดเมน: openclaw.$DOMAIN_NAME"
   fi
 }
 
 # ── Create directories ─────────────────────────────────────────────────────
 setup_dirs() {
-  info "Creating directories..."
+  info "สร้างโฟลเดอร์..."
   mkdir -p "$OPENCLAW_DATA"/{agents/main,canvas,credentials,cron/runs,devices,extensions,identity}
   mkdir -p "$WORKSPACE_DIR/memory"
   [ "$DEPLOY_MODE" = "vps" ] && mkdir -p "$SCRIPT_DIR/traefik-config"
-  ok "Directories"
+  ok "โฟลเดอร์พร้อม"
 }
 
 # ── Dockerfile ──────────────────────────────────────────────────────────────
 write_dockerfile() {
-  info "Writing Dockerfile..."
+  info "สร้าง Dockerfile..."
   cat > "$SCRIPT_DIR/Dockerfile" << 'EOF'
 FROM node:22-slim
 RUN npm install -g openclaw && \
@@ -97,7 +97,7 @@ EOF
 
 # ── docker-compose.yml ──────────────────────────────────────────────────────
 write_compose() {
-  info "Writing docker-compose.yml..."
+  info "สร้าง docker-compose.yml..."
 
   if [ "$DEPLOY_MODE" = "vps" ]; then
     # ── VPS: Traefik + OpenClaw ──
@@ -188,7 +188,7 @@ CEOF
 
 # ── Workspace templates ─────────────────────────────────────────────────────
 write_workspace() {
-  info "Writing workspace templates..."
+  info "สร้างไฟล์ workspace..."
 
   cat > "$WORKSPACE_DIR/AGENTS.md" << 'EOF'
 # AGENTS.md - Your Workspace
@@ -304,14 +304,14 @@ EOF
 }
 EOF
 
-  ok "Workspace templates"
+  ok "ไฟล์ workspace พร้อม"
 }
 
 # ── OpenClaw config ─────────────────────────────────────────────────────────
 write_config() {
   local CFG="$OPENCLAW_DATA/openclaw.json"
   if [ -f "$CFG" ]; then
-    warn "openclaw.json already exists, template saved as openclaw.json.template"
+    warn "openclaw.json มีอยู่แล้ว บันทึก template เป็น openclaw.json.template"
     CFG="$OPENCLAW_DATA/openclaw.json.template"
   fi
 
@@ -331,7 +331,7 @@ REOF
 )"
   fi
 
-  info "Writing OpenClaw config..."
+  info "สร้างไฟล์ config OpenClaw..."
   cat > "$CFG" << JEOF
 {
   "agents": {
@@ -377,51 +377,51 @@ REOF
   }
 }
 JEOF
-  ok "OpenClaw config → $CFG"
+  ok "Config OpenClaw → $CFG"
 }
 
 # ── Summary ─────────────────────────────────────────────────────────────────
 print_done() {
   echo ""
   echo "============================================================================"
-  printf "${GREEN}  OpenClaw is ready!${NC}\n"
+  printf "${GREEN}  OpenClaw พร้อมใช้งานแล้ว!${NC}\n"
   echo "============================================================================"
   echo ""
 
   if [ "$DEPLOY_MODE" = "vps" ]; then
-    echo "  Mode:      VPS (Traefik + auto SSL)"
+    echo "  โหมด:     VPS (Traefik + SSL อัตโนมัติ)"
     echo "  URL:       https://openclaw.$DOMAIN_NAME"
     echo "  Webhook:   https://openclaw.$DOMAIN_NAME/webhook/line"
     echo ""
   else
-    echo "  Mode:      Local"
+    echo "  โหมด:     Local"
     echo "  URL:       http://localhost:18789"
     echo ""
   fi
 
-  printf "  ${YELLOW}NEXT STEPS:${NC}\n"
+  printf "  ${YELLOW}ขั้นตอนถัดไป:${NC}\n"
   echo ""
-  echo "  1. Edit credentials:"
+  echo "  1. แก้ไข credentials ในไฟล์:"
   echo "     $OPENCLAW_DATA/openclaw.json"
-  echo "       - model provider + API key"
-  echo "       - LINE channel token & secret"
-  echo "       - Telegram bot token (optional)"
+  echo "       - ใส่ model provider + API key"
+  echo "       - ใส่ LINE channel token & secret"
+  echo "       - ใส่ Telegram bot token (ถ้าต้องการ)"
   echo ""
-  echo "  2. Start:"
+  echo "  2. เริ่มระบบ:"
   echo "     cd $SCRIPT_DIR && docker compose up -d --build"
   echo ""
-  echo "  3. Or wizard:"
+  echo "  3. หรือใช้ wizard ตั้งค่า:"
   echo "     docker compose run --rm openclaw configure"
   echo ""
-  echo "  4. Logs:"
+  echo "  4. ดู logs:"
   echo "     docker compose logs -f openclaw"
   echo ""
 
   if [ "$DEPLOY_MODE" = "vps" ]; then
-    echo "  5. Set LINE webhook URL to:"
+    echo "  5. ตั้ง LINE webhook URL เป็น:"
     echo "     https://openclaw.$DOMAIN_NAME/webhook/line"
     echo ""
-    echo "  Make sure DNS points openclaw.$DOMAIN_NAME → this server's IP"
+    echo "  อย่าลืมชี้ DNS ของ openclaw.$DOMAIN_NAME มาที่ IP เซิร์ฟเวอร์นี้"
     echo ""
   fi
 
@@ -433,7 +433,7 @@ print_done() {
 main() {
   echo ""
   printf "${CYAN}  OpenClaw Docker Setup${NC}\n"
-  echo "  Only requirement: Docker"
+  echo "  ต้องการแค่ Docker เท่านั้น"
 
   check_docker
   ask_mode
