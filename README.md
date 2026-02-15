@@ -2,7 +2,9 @@
 
 One-script setup for [OpenClaw](https://docs.openclaw.ai/) — AI gateway with LINE, Telegram, and more.
 
-**Only requirement: Docker.**
+**Only requirement: Docker.** Works on VPS or local machine.
+
+> **คู่มือภาษาไทยแบบละเอียด** → [GUIDE_TH.md](GUIDE_TH.md)
 
 ## Quick start
 
@@ -12,66 +14,36 @@ cd openclaw-setup
 bash setup-openclaw.sh
 ```
 
-The script asks you one question:
+The script asks where you're deploying:
 
-```
-Where are you deploying?
+- **VPS** → Traefik + auto SSL → `https://openclaw.yourdomain.com`
+- **Local** → `localhost:18789`
 
-  1) VPS   — public server with domain (adds Traefik + auto SSL)
-  2) Local — your machine, localhost access only
-```
+Then:
 
-### VPS mode
+1. Edit `~/.openclaw/openclaw.json` — add API keys + LINE tokens
+2. `docker compose up -d --build`
+3. Set LINE webhook → `https://openclaw.yourdomain.com/webhook/line`
 
-Deploys **Traefik** (reverse proxy + auto Let's Encrypt SSL) + **OpenClaw** in Docker.
+## What's included
 
-You get: `https://openclaw.yourdomain.com`
-
-The script will ask for:
-- Your domain (e.g. `srv1068766.hstgr.cloud`)
-- SSL email (for Let's Encrypt)
-- Timezone
-
-Then just:
-```bash
-# edit ~/.openclaw/openclaw.json  (add API keys + LINE tokens)
-docker compose up -d --build
-```
-
-Set your LINE webhook to: `https://openclaw.yourdomain.com/webhook/line`
-
-Make sure DNS `openclaw.yourdomain.com` points to your server IP.
-
-### Local mode
-
-Just OpenClaw on `localhost:18789`. No Traefik, no SSL.
-
-```bash
-# edit ~/.openclaw/openclaw.json  (add API keys + LINE tokens)
-docker compose up -d --build
-```
+- Dockerfile (Node 22 + OpenClaw + LINE plugin built-in)
+- docker-compose.yml (VPS: + Traefik with auto SSL)
+- Workspace templates
+- Auto-generated gateway auth token
 
 ## What you provide
 
-- AI model provider + API key (e.g. `kimi-coding/k2p5`, `anthropic/claude-opus-4-5`)
+- AI model provider + API key
 - LINE channel access token & secret (from [LINE Developers Console](https://developers.line.biz/))
-- Telegram bot token (optional, from [@BotFather](https://t.me/BotFather))
+- Telegram bot token (optional)
 
 ## Commands
 
 ```bash
-# Start
-docker compose up -d --build
-
-# Logs
-docker compose logs -f openclaw
-
-# Interactive wizard
-docker compose run --rm openclaw configure
-
-# Stop
-docker compose down
-
-# Rebuild after OpenClaw update
-docker compose build --no-cache && docker compose up -d
+docker compose up -d --build          # Start
+docker compose logs -f openclaw       # Logs
+docker compose run --rm openclaw configure  # Wizard
+docker compose down                   # Stop
+docker compose build --no-cache && docker compose up -d  # Update
 ```
