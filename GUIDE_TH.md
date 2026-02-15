@@ -67,8 +67,8 @@ docker --version
 ## 3. รันสคริปต์ติดตั้ง
 
 ```bash
-git clone https://github.com/Boom-Vitt/openclaw-setup.git
-cd openclaw-setup
+git clone https://github.com/Boom-Vitt/openclaw-line-bot.git
+cd openclaw-line-bot
 bash setup-openclaw.sh
 ```
 
