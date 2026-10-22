@@ -1,3 +1,15 @@
+<!-- BBN:HEADER:START -->
+<div align="center">
+
+<img src=".github/brand/banner.svg" width="100%" alt="OpenClaw LINE Bot — Set up an OpenClaw AI bot for LINE with Docker" />
+
+<a href="https://github.com/Boom-Vitt/openclaw-line-bot/stargazers"><img src="https://img.shields.io/github/stars/Boom-Vitt/openclaw-line-bot?style=flat-square&color=14b8a6&labelColor=0b1220" alt="stars" /></a>
+<a href="https://github.com/Boom-Vitt/openclaw-line-bot/commits/master"><img src="https://img.shields.io/github/last-commit/Boom-Vitt/openclaw-line-bot?style=flat-square&color=14b8a6&labelColor=0b1220" alt="last commit" /></a>
+<a href="https://github.com/Boom-Vitt"><img src="https://img.shields.io/badge/by-BoomBigNose-14b8a6?style=flat-square&labelColor=0b1220" alt="by BoomBigNose" /></a>
+
+</div>
+<!-- BBN:HEADER:END -->
+
 # OpenClaw LINE Bot Setup
 
 ติดตั้ง [OpenClaw](https://docs.openclaw.ai/) AI Bot สำหรับ LINE ด้วย Docker — ใช้ได้ทั้ง VPS และเครื่องตัวเอง
@@ -47,3 +59,15 @@ docker compose run --rm openclaw configure  # ตั้งค่าผ่าน 
 docker compose down                   # หยุดระบบ
 docker compose build --no-cache && docker compose up -d  # อัพเดท OpenClaw
 ```
+
+<!-- BBN:FOOTER:START -->
+---
+
+<div align="center">
+
+**สร้างโดย [BoomBigNose](https://github.com/Boom-Vitt)** · [Kruoop.com](https://kruoop.com) แหล่งเรียน AI + คอมมูนิตี้ · [Seeneo.ai](https://seeneo.ai) · [YouTube 220K](https://www.youtube.com/@BoomBigNose)
+
+<sub>ถ้าโปรเจกต์นี้มีประโยชน์ กด ⭐ ให้กำลังใจกันได้เลย</sub>
+
+</div>
+<!-- BBN:FOOTER:END -->
